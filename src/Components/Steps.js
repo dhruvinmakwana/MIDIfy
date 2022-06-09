@@ -11,7 +11,7 @@ import { sequenceProtoToMidi } from '@magenta/music';
 import { useDropzone } from 'react-dropzone'
 import Dropzone from 'react-dropzone';
 import { saveAs } from 'file-saver';
-import Lottie from 'react-lottie'
+// import Lottie from 'react-lottie'
 import notesLoader from '../lotties/52679-music-loader.json'
 export default class VerticalLinearStepper extends React.Component {
     constructor(props) {
