@@ -94,21 +94,27 @@ export default class VerticalLinearStepper extends React.Component {
        
     }
     processURLFile = async () => {
-        if(!this.state.validURL||this.state.processing){
-            return
+        try {
+            if(!this.state.validURL||this.state.processing){
+                return
+            }
+            this.setState({processing:true})
+            setTimeout(() => {
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    this.state.model.transcribeFromAudioURL(this.state.inputLink).then((ns) => {
+                        // window.saveAs(new File([sequenceProtoToMidi(ns)], 'transcription.mid'));
+                        this.setState({ convertedFile: new File([sequenceProtoToMidi(ns)], 'transcription.mid') });
+                        this.setState({processing:false})
+                        this.handleNext();
+    
+                    })
+                }))
+            }, 250)
+        } catch (error) {
+            alert("Oops something went wrong please try again later.")
+            this.handleReset()
         }
-        this.setState({processing:true})
-        setTimeout(() => {
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                this.state.model.transcribeFromAudioURL(this.state.inputLink).then((ns) => {
-                    // window.saveAs(new File([sequenceProtoToMidi(ns)], 'transcription.mid'));
-                    this.setState({ convertedFile: new File([sequenceProtoToMidi(ns)], 'transcription.mid') });
-                    this.setState({processing:false})
-                    this.handleNext();
 
-                })
-            }))
-        }, 250)
 
 
 
