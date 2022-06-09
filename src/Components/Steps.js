@@ -107,7 +107,8 @@ export default class VerticalLinearStepper extends React.Component {
                         this.handleNext();
     
                     }).catch(err=>{
-                        alert("Oops something went wrong please try again later.")
+                        alert("Oops something went wrong please use a different URL or try again later.")
+                        this.setState({processing:false})
                         this.handleReset()
                     })
                 }))
