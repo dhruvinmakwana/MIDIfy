@@ -1,0 +1,40 @@
+html, body, #App, #App>div,#root {
+    height: 100%;
+        background: black;
+  }
+/* *{
+    color: white; ;
+} */
+video{
+    width: 50%;
+}
+.loader{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    transition: all 250ms linear 2s;
+}
+.loader-text{
+    font-weight: bold;
+    font-size: large;
+    font-style: italic;
+    color: white;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo{
+    margin-right: 10px;
+    width: 100px;
+}
+.white-text{
+    color: white;
+}
+.uploadButton{
+    margin-bottom: 15px!important;
+}
