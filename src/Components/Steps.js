@@ -21,7 +21,8 @@ export default class VerticalLinearStepper extends React.Component {
             processing:false,
             model: props.model,
             activeStep: 0,
-            inputLink:''
+            inputLink:' ',
+            validURL:false
             };
             // this.inputLink=React.createRef(null);
     }
@@ -81,13 +82,21 @@ export default class VerticalLinearStepper extends React.Component {
 
 
     }
+    validateLink=(e)=>{
+        if (e.target.value.match(/\b(https?:\/\/\S*\b)/g)) {
+            this.setState({ errorText: ' ' })
+            this.setState({inputLink:e.target.value})
+            this.setState({validURL:true})
+          } else {
+            this.setState({ errorText: 'Invalid URL' })
+            this.setState({validURL:false})
+          }
+       
+    }
     processURLFile = async () => {
-        // const formData = new FormData();
-        // formData.append('file', e.target.files[0]);
-        // axios.post('/process', formData).then(res => {
-        //     //Now do what you want with the response;
-        //   })
-        // requestAnimationFrame(() => requestAnimationFrame(() => {
+        if(!this.state.validURL||this.state.processing){
+            return
+        }
         this.setState({processing:true})
         setTimeout(() => {
             requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -96,8 +105,6 @@ export default class VerticalLinearStepper extends React.Component {
                     this.setState({ convertedFile: new File([sequenceProtoToMidi(ns)], 'transcription.mid') });
                     this.setState({processing:false})
                     this.handleNext();
-                    // window.location=link;
-                    //   }));
 
                 })
             }))
@@ -127,7 +134,7 @@ export default class VerticalLinearStepper extends React.Component {
                             <Typography color="white">Get Started</Typography>
                         </StepLabel>
                         <StepContent>
-                            <Typography fontWeight={'bold'} color="white">{this.state.processing?'Processing your file. Please Wait...':'Upload a file to get started.'}</Typography>
+                            <Typography fontWeight={'bold'} color="white">{this.state.processing?'Processing your file. Please Wait...':'Upload a file or enter audio file URL to get started.'}</Typography>
                                                        {/* <Button
                                     variant="contained"
                                     onClick={this.handleNext}
@@ -138,22 +145,29 @@ export default class VerticalLinearStepper extends React.Component {
 
                             <Box sx={{ mb: 2 }}>
                                 <div>
-                                    <section className="container">
+                                    <section className="container" style={{marginBottom:10}}>
                                     <img src="animation_500_l43bhbax.gif" width='400'/><br/>
                                     <TextField
                                         id="outlined-helperText"
-                                        label="Helper text"
-                                        defaultValue="Default Value"
-                                        // ref={this.inputLink}
+                                        label="URL to audio file"
+                                        defaultValue=""
                                         value={this.inputLink}
-                                        onChange={(e)=>this.setState({inputLink:e.target.value})}
-                                        helperText="Some important text"
+                                        onChange={this.validateLink}
+                                        helperText={this.state.errorText}
+                                        inputProps={{ style: { color: "White" } }}
+                                        focused
+                                        errorText= {this.state.errorText}
+                                        FormHelperTextProps={{ style: { color: "Red" } }}
                                         />
-                                    <Button className='submitLink' variant="contained" component="label" color="primary" onClick={this.processURLFile} disabled={this.state.processing}>
+                                        {this.state.validURL &&
+                                    <Button hidden={true} style={{height:56,marginLeft:5}} className='submitLink' variant="contained" component="label" color="primary" onClick={this.processURLFile} >
                                             {" "}
+                                            
                                            submit
                                         </Button>
-                                        <Button className='uploadButton' variant="contained" component="label" color="primary" onChange={this.processFile} disabled={this.state.processing}>
+                                    }
+                                    </section>
+                                    <Button className='uploadButton' variant="contained" component="label" color="primary" onChange={this.processFile} disabled={this.state.processing}>
                                             {" "}
                                            {this.state.processing? 'please wait...': 'Upload'}
                                             <input type="file" hidden />
@@ -161,7 +175,6 @@ export default class VerticalLinearStepper extends React.Component {
                                         
                                         <Typography className='note-text' fontStyle={'italic'} color="white">{this.state.processing?'Please note that your browser might feel sluggish while conversion is in progress.':''}</Typography>
                                         
-                                    </section>
                                 </div>
                             </Box>
                         </StepContent>
