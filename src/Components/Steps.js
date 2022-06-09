@@ -94,7 +94,6 @@ export default class VerticalLinearStepper extends React.Component {
        
     }
     processURLFile = async () => {
-        try {
             if(!this.state.validURL||this.state.processing){
                 return
             }
@@ -107,17 +106,12 @@ export default class VerticalLinearStepper extends React.Component {
                         this.setState({processing:false})
                         this.handleNext();
     
+                    }).catch(err=>{
+                        alert("Oops something went wrong please try again later.")
+                        this.handleReset()
                     })
                 }))
             }, 250)
-        } catch (error) {
-            alert("Oops something went wrong please try again later.")
-            this.handleReset()
-        }
-
-
-
-
     }
     download = (e) => {
         saveAs(this.state.convertedFile);
