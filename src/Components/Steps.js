@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { sequenceProtoToMidi } from '@magenta/music';
+import TextField from '@mui/material/TextField';
 import { useDropzone } from 'react-dropzone'
 import Dropzone from 'react-dropzone';
 import { saveAs } from 'file-saver';
@@ -20,7 +21,9 @@ export default class VerticalLinearStepper extends React.Component {
             processing:false,
             model: props.model,
             activeStep: 0,
+            inputLink:''
             };
+            // this.inputLink=React.createRef(null);
     }
 
 
@@ -35,6 +38,24 @@ export default class VerticalLinearStepper extends React.Component {
     handleReset = () => {
         this.setState({ activeStep: 0 })
     };
+
+    getfileAndProcess=async(e)=>{
+        console.log(this.state.inputLink)
+        fetch(this.state.inputLink)
+            .then(response => {
+                response.blob().then(blob => {
+                    var file = new File([blob], "file.wav");
+                    console.log(file)
+                    var data={
+                        target:{
+                            files:[file]
+                        }
+                    }
+                    this.processFile(data)
+                })
+            })
+
+    } 
     processFile = async (e) => {
         // const formData = new FormData();
         // formData.append('file', e.target.files[0]);
@@ -46,6 +67,31 @@ export default class VerticalLinearStepper extends React.Component {
         setTimeout(() => {
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 this.state.model.transcribeFromAudioFile(e.target.files[0]).then((ns) => {
+                    // window.saveAs(new File([sequenceProtoToMidi(ns)], 'transcription.mid'));
+                    this.setState({ convertedFile: new File([sequenceProtoToMidi(ns)], 'transcription.mid') });
+                    this.setState({processing:false})
+                    this.handleNext();
+                    // window.location=link;
+                    //   }));
+
+                })
+            }))
+        }, 250)
+
+
+
+    }
+    processURLFile = async () => {
+        // const formData = new FormData();
+        // formData.append('file', e.target.files[0]);
+        // axios.post('/process', formData).then(res => {
+        //     //Now do what you want with the response;
+        //   })
+        // requestAnimationFrame(() => requestAnimationFrame(() => {
+        this.setState({processing:true})
+        setTimeout(() => {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                this.state.model.transcribeFromAudioURL(this.state.inputLink).then((ns) => {
                     // window.saveAs(new File([sequenceProtoToMidi(ns)], 'transcription.mid'));
                     this.setState({ convertedFile: new File([sequenceProtoToMidi(ns)], 'transcription.mid') });
                     this.setState({processing:false})
@@ -94,6 +140,19 @@ export default class VerticalLinearStepper extends React.Component {
                                 <div>
                                     <section className="container">
                                     <img src="animation_500_l43bhbax.gif" width='400'/><br/>
+                                    <TextField
+                                        id="outlined-helperText"
+                                        label="Helper text"
+                                        defaultValue="Default Value"
+                                        // ref={this.inputLink}
+                                        value={this.inputLink}
+                                        onChange={(e)=>this.setState({inputLink:e.target.value})}
+                                        helperText="Some important text"
+                                        />
+                                    <Button className='submitLink' variant="contained" component="label" color="primary" onClick={this.processURLFile} disabled={this.state.processing}>
+                                            {" "}
+                                           submit
+                                        </Button>
                                         <Button className='uploadButton' variant="contained" component="label" color="primary" onChange={this.processFile} disabled={this.state.processing}>
                                             {" "}
                                            {this.state.processing? 'please wait...': 'Upload'}
